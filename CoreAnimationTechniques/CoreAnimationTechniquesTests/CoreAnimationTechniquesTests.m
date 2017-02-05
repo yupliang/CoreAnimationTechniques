@@ -5,7 +5,7 @@
 //  Created by app-01 on 2017/2/4.
 //  Copyright © 2017年 EBOOK. All rights reserved.
 //
-
+#import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 @interface CoreAnimationTechniquesTests : XCTestCase
@@ -28,12 +28,21 @@
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
 }
-
+void (^loadImage)(NSString *imageName) = ^(NSString *imageName) {
+    UIImage *image = [UIImage imageNamed:imageName];
+};
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
     [self measureBlock:^{
-        // Put the code you want to measure the time of here.
+        loadImage(@"IMG_k1");
+        loadImage(@"IMG_k2");
+        loadImage(@"IMG_k3");
+        loadImage(@"IMG_k4");
     }];
 }
-
+- (void)testLoadABigImage {
+    [self measureBlock:^{
+        loadImage(@"IMG_0263");
+    }];
+}
 @end

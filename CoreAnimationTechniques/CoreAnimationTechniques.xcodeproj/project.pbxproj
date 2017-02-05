@@ -15,6 +15,8 @@
 		C51E3A461E4579D10068A440 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C51E3A441E4579D10068A440 /* LaunchScreen.storyboard */; };
 		C51E3A511E4579D10068A440 /* CoreAnimationTechniquesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C51E3A501E4579D10068A440 /* CoreAnimationTechniquesTests.m */; };
 		C51E3A5C1E4579D10068A440 /* CoreAnimationTechniquesUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C51E3A5B1E4579D10068A440 /* CoreAnimationTechniquesUITests.m */; };
+		C51E3A6B1E4584F50068A440 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C51E3A6A1E4584F50068A440 /* QuartzCore.framework */; };
+		C539D94A1E4594A800A5A869 /* IMG_0263.JPG in Resources */ = {isa = PBXBuildFile; fileRef = C539D9491E4594A800A5A869 /* IMG_0263.JPG */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 		C51E3A571E4579D10068A440 /* CoreAnimationTechniquesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreAnimationTechniquesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C51E3A5B1E4579D10068A440 /* CoreAnimationTechniquesUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreAnimationTechniquesUITests.m; sourceTree = "<group>"; };
 		C51E3A5D1E4579D10068A440 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C51E3A6A1E4584F50068A440 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		C539D9491E4594A800A5A869 /* IMG_0263.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = IMG_0263.JPG; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C51E3A6B1E4584F50068A440 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,7 @@
 				C51E3A4F1E4579D10068A440 /* CoreAnimationTechniquesTests */,
 				C51E3A5A1E4579D10068A440 /* CoreAnimationTechniquesUITests */,
 				C51E3A341E4579D10068A440 /* Products */,
+				C51E3A691E4584F40068A440 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -105,6 +111,7 @@
 				C51E3A3A1E4579D10068A440 /* AppDelegate.m */,
 				C51E3A3C1E4579D10068A440 /* ViewController.h */,
 				C51E3A3D1E4579D10068A440 /* ViewController.m */,
+				C539D9491E4594A800A5A869 /* IMG_0263.JPG */,
 				C51E3A3F1E4579D10068A440 /* Main.storyboard */,
 				C51E3A421E4579D10068A440 /* Assets.xcassets */,
 				C51E3A441E4579D10068A440 /* LaunchScreen.storyboard */,
@@ -138,6 +145,14 @@
 				C51E3A5D1E4579D10068A440 /* Info.plist */,
 			);
 			path = CoreAnimationTechniquesUITests;
+			sourceTree = "<group>";
+		};
+		C51E3A691E4584F40068A440 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C51E3A6A1E4584F50068A440 /* QuartzCore.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,6 +266,7 @@
 			files = (
 				C51E3A461E4579D10068A440 /* LaunchScreen.storyboard in Resources */,
 				C51E3A431E4579D10068A440 /* Assets.xcassets in Resources */,
+				C539D94A1E4594A800A5A869 /* IMG_0263.JPG in Resources */,
 				C51E3A411E4579D10068A440 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -514,6 +530,7 @@
 				C51E3A621E4579D10068A440 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C51E3A631E4579D10068A440 /* Build configuration list for PBXNativeTarget "CoreAnimationTechniquesTests" */ = {
 			isa = XCConfigurationList;
@@ -522,6 +539,7 @@
 				C51E3A651E4579D10068A440 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C51E3A661E4579D10068A440 /* Build configuration list for PBXNativeTarget "CoreAnimationTechniquesUITests" */ = {
 			isa = XCConfigurationList;
@@ -530,6 +548,7 @@
 				C51E3A681E4579D10068A440 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
