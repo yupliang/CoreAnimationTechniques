@@ -10,10 +10,12 @@
 
 @interface ViewController () <CALayerDelegate>
 @property (nonatomic, strong) UIView *layerView;
-@property (nonatomic, strong) UIView *hourHand;
-@property (nonatomic, strong) UIView *minuteHand;
-@property (nonatomic, strong) UIView *secondHand;
 @property (nonatomic, weak) NSTimer *timer;
+@property (nonatomic, strong) CALayer *blueLayer;
+
+@property (strong, nonatomic) IBOutletCollection(UIView) NSArray *digitViews;
+
+
 @end
 
 UIView * (^getClockHand)(CGRect frame, NSString *imageName) = ^UIView *(CGRect frame, NSString *imageName){
@@ -24,45 +26,97 @@ UIView * (^getClockHand)(CGRect frame, NSString *imageName) = ^UIView *(CGRect f
     view.layer.contentsGravity = kCAGravityResizeAspect;
     return view;
 };
+UIView * (^getAView)(CGRect frame, UIColor *backgroundColor) = ^UIView *(CGRect frame, UIColor *backgroundColor){
+    UIView *view = [[UIView alloc] initWithFrame:frame];
+    view.backgroundColor = backgroundColor;
+    return view;
+};
 @implementation ViewController
 
 - (void)loadView {
     [super loadView];
     self.view.backgroundColor = [UIColor grayColor];
-    self.layerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
-    _layerView.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2);
-    UIImage *image = [UIImage imageNamed:@"ClockFace"];
-    _layerView.layer.contents = (__bridge id)image.CGImage;
-    _layerView.layer.contentsScale = [UIScreen mainScreen].scale;
-    _layerView.layer.contentsGravity = kCAGravityResizeAspect;
-    [self.view addSubview:_layerView];
-    
-    //HourHand
-    self.hourHand = getClockHand(CGRectMake(92.0f, 74.0f, 21.0f, 66.5f),@"HourHand");
-    [_layerView addSubview:_hourHand];
-    self.minuteHand = getClockHand(CGRectMake(96.0f, 65.0f, 13.5f, 74.5f),@"MinuteHand");
-    [_layerView addSubview:_minuteHand];
-    self.secondHand = getClockHand(CGRectMake(100.0f, 68.0f, 6.5f, 72.0f),@"SecondHand");
-    [_layerView addSubview:_secondHand];
-    _hourHand.layer.anchorPoint = CGPointMake(0.5, 0.9);
-    _minuteHand.layer.anchorPoint = CGPointMake(0.5, 0.9);
-    _secondHand.layer.anchorPoint = CGPointMake(0.5, 0.9);
+    UIImage *digits = [UIImage imageNamed:@"Digits"];
+    //set up digit views
+    [_digitViews enumerateObjectsUsingBlock:^(UIView *aView, NSUInteger idx, BOOL * _Nonnull stop) {
+        //set contents
+        aView.layer.contents = (__bridge id)digits.CGImage;
+        aView.layer.contentsRect = CGRectMake(0, 0, 0.1f, 1.0f);
+        aView.layer.contentsGravity = kCAGravityResizeAspect;
+        aView.layer.magnificationFilter = kCAFilterNearest;
+    }];
     //start timer
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(tick) userInfo:nil repeats:YES];
-    //set initial hand positions
+    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(tick) userInfo:nil repeats:YES];
+    
+    //set initial clock time
     [self tick];
+}
+- (void)setDigit:(NSInteger)digit forView:(UIView *)view {
+    //adjust contentsRect to select correct digit
+    view.layer.contentsRect = CGRectMake(0.1*digit, 0, 0.1f, 1);
 }
 - (void)tick {
     //convert time to hours, minutes and seconds
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSCalendarUnit units = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
     NSDateComponents *components = [calendar components:units fromDate:[NSDate date]];
-    CGFloat hoursAngle = (components.hour/12.0)*M_PI*2.0;
-    CGFloat minutesAngle = (components.minute/60.0)*M_PI*2.0;
-    CGFloat secondAngle = (components.second/60.0)*M_PI*2.0;
-    self.hourHand.transform = CGAffineTransformMakeRotation(hoursAngle);
-    self.minuteHand.transform = CGAffineTransformMakeRotation(minutesAngle);
-    self.secondHand.transform = CGAffineTransformMakeRotation(secondAngle);
+    //set hours
+    [self setDigit:components.hour/10 forView:self.digitViews[0]];
+    [self setDigit:components.hour%10 forView:self.digitViews[1]];
+    
+    //set minutes
+    [self setDigit:components.minute/10 forView:self.digitViews[2]];
+    [self setDigit:components.minute%10 forView:self.digitViews[3]];
+    
+    //set seconds
+    [self setDigit:components.second/10 forView:self.digitViews[4]];
+    [self setDigit:components.second%10 forView:self.digitViews[5]];
+}
+
+#pragma mark - TOUCH EVENT
+/*
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    //get touch position relative to main view
+    CGPoint point = [[touches anyObject] locationInView:self.view];
+    //convert point to the white layer's coordinates
+    point = [_layerView.layer convertPoint:point fromLayer:self.view.layer];
+    //get layer using containsPoint:
+    if ([_layerView.layer containsPoint:point]) {
+        //convert point to blueLayer's coordinates
+        point = [self.blueLayer convertPoint:point fromLayer:_layerView.layer];
+        if ([_blueLayer containsPoint:point]) {
+            [[[UIAlertView alloc] initWithTitle:@"Inside Blue Layer"
+                                       message:nil
+                                      delegate:nil
+                             cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil, nil] show];
+        } else {
+            [[[UIAlertView alloc] initWithTitle:@"Inside White Layer"
+                                       message:nil
+                                      delegate:nil
+                             cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil, nil] show];
+        }
+    }
+}
+ */ //containsPoint:
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    //get touch position
+    CGPoint point = [[touches anyObject] locationInView:self.view];
+    CALayer *layer = [_layerView.layer hitTest:point];
+    if (_blueLayer && layer == _blueLayer) {
+        [[[UIAlertView alloc] initWithTitle:@"Inside Blue Layer"
+                                   message:nil
+                                  delegate:nil
+                         cancelButtonTitle:@"OK"
+                         otherButtonTitles:nil, nil] show];
+    } else if (_layerView && layer == _layerView.layer) {
+        [[[UIAlertView alloc] initWithTitle:@"Inside White Layer"
+                                   message:nil
+                                  delegate:nil
+                         cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil, nil] show];
+    }
 }
 
 #pragma mark - CALAYER DELEGATE
@@ -72,16 +126,5 @@ UIView * (^getClockHand)(CGRect frame, NSString *imageName) = ^UIView *(CGRect f
     CGContextSetStrokeColorWithColor(ctx, [UIColor redColor].CGColor);
     CGContextStrokeEllipseInRect(ctx, layer.bounds);
 }
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-}
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 
 @end
