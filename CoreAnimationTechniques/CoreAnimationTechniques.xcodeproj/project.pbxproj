@@ -18,6 +18,8 @@
 		C51E3A6B1E4584F50068A440 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C51E3A6A1E4584F50068A440 /* QuartzCore.framework */; };
 		C56B4DDA1E48816C003CE337 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = C56B4DD91E48816C003CE337 /* View.xib */; };
 		C56B4DDC1E489175003CE337 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C56B4DDB1E489175003CE337 /* GLKit.framework */; };
+		C56B4DDE1E49A8D5003CE337 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C56B4DDD1E49A8D5003CE337 /* CoreText.framework */; };
+		C56B4DE11E49B09A003CE337 /* CATELayerLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C56B4DE01E49B09A003CE337 /* CATELayerLabel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +59,9 @@
 		C51E3A6A1E4584F50068A440 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		C56B4DD91E48816C003CE337 /* View.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		C56B4DDB1E489175003CE337 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		C56B4DDD1E49A8D5003CE337 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		C56B4DDF1E49B09A003CE337 /* CATELayerLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CATELayerLabel.h; sourceTree = "<group>"; };
+		C56B4DE01E49B09A003CE337 /* CATELayerLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CATELayerLabel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C56B4DDE1E49A8D5003CE337 /* CoreText.framework in Frameworks */,
 				C56B4DDC1E489175003CE337 /* GLKit.framework in Frameworks */,
 				C51E3A6B1E4584F50068A440 /* QuartzCore.framework in Frameworks */,
 			);
@@ -120,6 +126,8 @@
 				C51E3A441E4579D10068A440 /* LaunchScreen.storyboard */,
 				C51E3A471E4579D10068A440 /* Info.plist */,
 				C51E3A361E4579D10068A440 /* Supporting Files */,
+				C56B4DDF1E49B09A003CE337 /* CATELayerLabel.h */,
+				C56B4DE01E49B09A003CE337 /* CATELayerLabel.m */,
 			);
 			path = CoreAnimationTechniques;
 			sourceTree = "<group>";
@@ -153,6 +161,7 @@
 		C51E3A691E4584F40068A440 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C56B4DDD1E49A8D5003CE337 /* CoreText.framework */,
 				C56B4DDB1E489175003CE337 /* GLKit.framework */,
 				C51E3A6A1E4584F50068A440 /* QuartzCore.framework */,
 			);
@@ -297,6 +306,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C51E3A3E1E4579D10068A440 /* ViewController.m in Sources */,
+				C56B4DE11E49B09A003CE337 /* CATELayerLabel.m in Sources */,
 				C51E3A3B1E4579D10068A440 /* AppDelegate.m in Sources */,
 				C51E3A381E4579D10068A440 /* main.m in Sources */,
 			);
