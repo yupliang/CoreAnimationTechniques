@@ -7,15 +7,12 @@
 //
 
 #import "ViewController.h"
-
+#import <GLKit/GLKit.h>
+#define LIGHT_DIRECTION 0,1,-0.5
+#define AMBIENT_LIGHT 0.5
 @interface ViewController () <CALayerDelegate>
-@property (nonatomic, strong) UIView *layerView;
-@property (nonatomic, weak) NSTimer *timer;
-@property (nonatomic, strong) CALayer *blueLayer;
-
-@property (strong, nonatomic) IBOutletCollection(UIView) NSArray *digitViews;
-
-
+@property (nonatomic, weak) IBOutlet UIView *containerView;
+@property (nonatomic, strong) IBOutletCollection(UIView) NSArray *faces;
 @end
 
 UIView * (^getClockHand)(CGRect frame, NSString *imageName) = ^UIView *(CGRect frame, NSString *imageName){
@@ -31,100 +28,91 @@ UIView * (^getAView)(CGRect frame, UIColor *backgroundColor) = ^UIView *(CGRect 
     view.backgroundColor = backgroundColor;
     return view;
 };
+UIButton * (^getAButton)() = ^UIButton *(){
+    //create button
+    CGRect frame = CGRectMake(0, 0, 150, 50);
+    UIButton *button = [[UIButton alloc] initWithFrame:frame];
+    button.backgroundColor = [UIColor whiteColor];
+    button.layer.cornerRadius = 10.0f;
+    //add label
+    frame = CGRectMake(20, 10, 110, 30);
+    UILabel *label = [[UILabel alloc] initWithFrame:frame];
+    label.text = @"Hello World";
+    label.textAlignment = NSTextAlignmentCenter;
+    [button addSubview:label];
+    return button;
+};
 @implementation ViewController
-
+- (void)applyLightingToFace:(CALayer *)face {
+    //add lighting layer
+    CALayer *layer = [CALayer layer];
+    layer.frame = face.bounds;
+    [face addSublayer:layer];
+    //convert the face transform to matrix
+    //(GLKMatrix4 has the same structure as CATransform3D)
+    CATransform3D transform = face.transform;
+    GLKMatrix4 matrix4 = GLKMatrix4Make(transform.m11, transform.m12, transform.m13, transform.m14, transform.m21, transform.m22, transform.m23, transform.m24, transform.m31, transform.m32, transform.m33, transform.m34, transform.m41, transform.m42, transform.m43, transform.m44);
+    GLKMatrix3 matrix3 = GLKMatrix4GetMatrix3(matrix4);
+    //get face normal
+    GLKVector3 normal = GLKVector3Make(0, 0, 1);
+    normal = GLKMatrix3MultiplyVector3(matrix3, normal);
+    normal = GLKVector3Normalize(normal);
+    //get dot product with light direction
+    GLKVector3 light = GLKVector3Normalize(GLKVector3Make(LIGHT_DIRECTION));
+    float dotProduct = GLKVector3DotProduct(light, normal);
+    //set lighting layer opacity
+    CGFloat shadow = 1+dotProduct-AMBIENT_LIGHT;
+    UIColor *color = [UIColor colorWithWhite:0 alpha:shadow];
+    layer.backgroundColor = color.CGColor;
+}
+- (void)addFace:(NSInteger)index withTransform:(CATransform3D)transform {
+    //get the face view and add it to the container
+    UIView *face = self.faces[index];
+    if (index!=2) face.userInteractionEnabled = NO;
+    [_containerView addSubview:face];
+    //center the face view within the container
+    face.center = CGPointMake(_containerView.frame.size.width/2, _containerView.frame.size.height/2);
+    //apply the transform
+    face.layer.transform = transform;
+    //apply lighting
+    [self applyLightingToFace:face.layer];
+}
 - (void)loadView {
     [super loadView];
-    self.view.backgroundColor = [UIColor grayColor];
-    UIImage *digits = [UIImage imageNamed:@"Digits"];
-    //set up digit views
-    [_digitViews enumerateObjectsUsingBlock:^(UIView *aView, NSUInteger idx, BOOL * _Nonnull stop) {
-        //set contents
-        aView.layer.contents = (__bridge id)digits.CGImage;
-        aView.layer.contentsRect = CGRectMake(0, 0, 0.1f, 1.0f);
-        aView.layer.contentsGravity = kCAGravityResizeAspect;
-        aView.layer.magnificationFilter = kCAFilterNearest;
-    }];
-    //start timer
-    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(tick) userInfo:nil repeats:YES];
+    [[NSBundle mainBundle] loadNibNamed:@"View" owner:self options:nil];
     
-    //set initial clock time
-    [self tick];
-}
-- (void)setDigit:(NSInteger)digit forView:(UIView *)view {
-    //adjust contentsRect to select correct digit
-    view.layer.contentsRect = CGRectMake(0.1*digit, 0, 0.1f, 1);
-}
-- (void)tick {
-    //convert time to hours, minutes and seconds
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSCalendarUnit units = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
-    NSDateComponents *components = [calendar components:units fromDate:[NSDate date]];
-    //set hours
-    [self setDigit:components.hour/10 forView:self.digitViews[0]];
-    [self setDigit:components.hour%10 forView:self.digitViews[1]];
-    
-    //set minutes
-    [self setDigit:components.minute/10 forView:self.digitViews[2]];
-    [self setDigit:components.minute%10 forView:self.digitViews[3]];
-    
-    //set seconds
-    [self setDigit:components.second/10 forView:self.digitViews[4]];
-    [self setDigit:components.second%10 forView:self.digitViews[5]];
+    //set up the container sublayer transform
+    CATransform3D perspective = CATransform3DIdentity;
+    perspective.m34 = -1.0f/500.0f;
+    perspective = CATransform3DRotate(perspective, -M_PI_4, 1, 0, 0);
+    perspective = CATransform3DRotate(perspective, -M_PI_4, 0, 1, 0);
+    _containerView.layer.sublayerTransform = perspective;
+    _containerView.layer.doubleSided = NO;
+    //add cube face 1
+    [self addFace:0 withTransform:CATransform3DMakeTranslation(0, 0, 100)];
+    //add cube face 2
+    CATransform3D transform = CATransform3DMakeTranslation(100, 0, 0);
+    transform = CATransform3DRotate(transform, M_PI_2, 0, 1, 0);
+    [self addFace:1 withTransform:transform];
+    //add cube face 3
+    transform = CATransform3DMakeTranslation(0, -100, 0);
+    transform = CATransform3DRotate(transform, M_PI_2, 1, 0, 0);
+    [self addFace:2 withTransform:transform];
+    //add cube face 4
+    transform = CATransform3DMakeTranslation(0, 100, 0);
+    transform = CATransform3DRotate(transform, -M_PI_2, 1, 0, 0);
+    [self addFace:3 withTransform:transform];
+    //add cube face 5
+    transform = CATransform3DMakeTranslation(-100, 0, 0);
+    transform = CATransform3DRotate(transform, -M_PI_2, 0, 1, 0);
+    [self addFace:4 withTransform:transform];
+    //add cube face 6
+    transform = CATransform3DMakeTranslation(0, 0, -100);
+    transform = CATransform3DRotate(transform, M_PI, 0, 1, 0);
+    [self addFace:5 withTransform:transform];
 }
 
-#pragma mark - TOUCH EVENT
-/*
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    //get touch position relative to main view
-    CGPoint point = [[touches anyObject] locationInView:self.view];
-    //convert point to the white layer's coordinates
-    point = [_layerView.layer convertPoint:point fromLayer:self.view.layer];
-    //get layer using containsPoint:
-    if ([_layerView.layer containsPoint:point]) {
-        //convert point to blueLayer's coordinates
-        point = [self.blueLayer convertPoint:point fromLayer:_layerView.layer];
-        if ([_blueLayer containsPoint:point]) {
-            [[[UIAlertView alloc] initWithTitle:@"Inside Blue Layer"
-                                       message:nil
-                                      delegate:nil
-                             cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil, nil] show];
-        } else {
-            [[[UIAlertView alloc] initWithTitle:@"Inside White Layer"
-                                       message:nil
-                                      delegate:nil
-                             cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil, nil] show];
-        }
-    }
+- (IBAction)tap:(id)sender {
+    NSLog(@"%s",__FUNCTION__);
 }
- */ //containsPoint:
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    //get touch position
-    CGPoint point = [[touches anyObject] locationInView:self.view];
-    CALayer *layer = [_layerView.layer hitTest:point];
-    if (_blueLayer && layer == _blueLayer) {
-        [[[UIAlertView alloc] initWithTitle:@"Inside Blue Layer"
-                                   message:nil
-                                  delegate:nil
-                         cancelButtonTitle:@"OK"
-                         otherButtonTitles:nil, nil] show];
-    } else if (_layerView && layer == _layerView.layer) {
-        [[[UIAlertView alloc] initWithTitle:@"Inside White Layer"
-                                   message:nil
-                                  delegate:nil
-                         cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil, nil] show];
-    }
-}
-
-#pragma mark - CALAYER DELEGATE
-- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx {
-    //draw a thick red circle
-    CGContextSetLineWidth(ctx, 10.0f);
-    CGContextSetStrokeColorWithColor(ctx, [UIColor redColor].CGColor);
-    CGContextStrokeEllipseInRect(ctx, layer.bounds);
-}
-
 @end

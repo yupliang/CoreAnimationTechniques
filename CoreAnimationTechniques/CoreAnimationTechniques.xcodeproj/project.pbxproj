@@ -16,6 +16,8 @@
 		C51E3A511E4579D10068A440 /* CoreAnimationTechniquesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C51E3A501E4579D10068A440 /* CoreAnimationTechniquesTests.m */; };
 		C51E3A5C1E4579D10068A440 /* CoreAnimationTechniquesUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C51E3A5B1E4579D10068A440 /* CoreAnimationTechniquesUITests.m */; };
 		C51E3A6B1E4584F50068A440 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C51E3A6A1E4584F50068A440 /* QuartzCore.framework */; };
+		C56B4DDA1E48816C003CE337 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = C56B4DD91E48816C003CE337 /* View.xib */; };
+		C56B4DDC1E489175003CE337 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C56B4DDB1E489175003CE337 /* GLKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,8 @@
 		C51E3A5B1E4579D10068A440 /* CoreAnimationTechniquesUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreAnimationTechniquesUITests.m; sourceTree = "<group>"; };
 		C51E3A5D1E4579D10068A440 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C51E3A6A1E4584F50068A440 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		C56B4DD91E48816C003CE337 /* View.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
+		C56B4DDB1E489175003CE337 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C56B4DDC1E489175003CE337 /* GLKit.framework in Frameworks */,
 				C51E3A6B1E4584F50068A440 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -109,6 +114,7 @@
 				C51E3A3A1E4579D10068A440 /* AppDelegate.m */,
 				C51E3A3C1E4579D10068A440 /* ViewController.h */,
 				C51E3A3D1E4579D10068A440 /* ViewController.m */,
+				C56B4DD91E48816C003CE337 /* View.xib */,
 				C51E3A3F1E4579D10068A440 /* Main.storyboard */,
 				C51E3A421E4579D10068A440 /* Assets.xcassets */,
 				C51E3A441E4579D10068A440 /* LaunchScreen.storyboard */,
@@ -147,6 +153,7 @@
 		C51E3A691E4584F40068A440 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C56B4DDB1E489175003CE337 /* GLKit.framework */,
 				C51E3A6A1E4584F50068A440 /* QuartzCore.framework */,
 			);
 			name = Frameworks;
@@ -261,6 +268,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C56B4DDA1E48816C003CE337 /* View.xib in Resources */,
 				C51E3A461E4579D10068A440 /* LaunchScreen.storyboard in Resources */,
 				C51E3A431E4579D10068A440 /* Assets.xcassets in Resources */,
 				C51E3A411E4579D10068A440 /* Main.storyboard in Resources */,
