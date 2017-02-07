@@ -43,73 +43,61 @@ UIButton * (^getAButton)() = ^UIButton *(){
     return button;
 };
 @implementation ViewController
-- (void)applyLightingToFace:(CALayer *)face {
-    //add lighting layer
-    CALayer *layer = [CALayer layer];
-    layer.frame = face.bounds;
-    [face addSublayer:layer];
-    //convert the face transform to matrix
-    //(GLKMatrix4 has the same structure as CATransform3D)
-    CATransform3D transform = face.transform;
-    GLKMatrix4 matrix4 = GLKMatrix4Make(transform.m11, transform.m12, transform.m13, transform.m14, transform.m21, transform.m22, transform.m23, transform.m24, transform.m31, transform.m32, transform.m33, transform.m34, transform.m41, transform.m42, transform.m43, transform.m44);
-    GLKMatrix3 matrix3 = GLKMatrix4GetMatrix3(matrix4);
-    //get face normal
-    GLKVector3 normal = GLKVector3Make(0, 0, 1);
-    normal = GLKMatrix3MultiplyVector3(matrix3, normal);
-    normal = GLKVector3Normalize(normal);
-    //get dot product with light direction
-    GLKVector3 light = GLKVector3Normalize(GLKVector3Make(LIGHT_DIRECTION));
-    float dotProduct = GLKVector3DotProduct(light, normal);
-    //set lighting layer opacity
-    CGFloat shadow = 1+dotProduct-AMBIENT_LIGHT;
-    UIColor *color = [UIColor colorWithWhite:0 alpha:shadow];
-    layer.backgroundColor = color.CGColor;
-}
-- (void)addFace:(NSInteger)index withTransform:(CATransform3D)transform {
-    //get the face view and add it to the container
-    UIView *face = self.faces[index];
-    if (index!=2) face.userInteractionEnabled = NO;
-    [_containerView addSubview:face];
-    //center the face view within the container
-    face.center = CGPointMake(_containerView.frame.size.width/2, _containerView.frame.size.height/2);
-    //apply the transform
-    face.layer.transform = transform;
-    //apply lighting
-    [self applyLightingToFace:face.layer];
-}
 - (void)loadView {
     [super loadView];
-    [[NSBundle mainBundle] loadNibNamed:@"View" owner:self options:nil];
+
+    UIImage *image = [UIImage imageNamed:@"IMG_k1"];
+    _containerView.layer.contents = (__bridge id)image.CGImage;
     
-    //set up the container sublayer transform
-    CATransform3D perspective = CATransform3DIdentity;
-    perspective.m34 = -1.0f/500.0f;
-    perspective = CATransform3DRotate(perspective, -M_PI_4, 1, 0, 0);
-    perspective = CATransform3DRotate(perspective, -M_PI_4, 0, 1, 0);
-    _containerView.layer.sublayerTransform = perspective;
-    _containerView.layer.doubleSided = NO;
-    //add cube face 1
-    [self addFace:0 withTransform:CATransform3DMakeTranslation(0, 0, 100)];
-    //add cube face 2
-    CATransform3D transform = CATransform3DMakeTranslation(100, 0, 0);
-    transform = CATransform3DRotate(transform, M_PI_2, 0, 1, 0);
-    [self addFace:1 withTransform:transform];
-    //add cube face 3
-    transform = CATransform3DMakeTranslation(0, -100, 0);
-    transform = CATransform3DRotate(transform, M_PI_2, 1, 0, 0);
-    [self addFace:2 withTransform:transform];
-    //add cube face 4
-    transform = CATransform3DMakeTranslation(0, 100, 0);
-    transform = CATransform3DRotate(transform, -M_PI_2, 1, 0, 0);
-    [self addFace:3 withTransform:transform];
-    //add cube face 5
-    transform = CATransform3DMakeTranslation(-100, 0, 0);
-    transform = CATransform3DRotate(transform, -M_PI_2, 0, 1, 0);
-    [self addFace:4 withTransform:transform];
-    //add cube face 6
-    transform = CATransform3DMakeTranslation(0, 0, -100);
-    transform = CATransform3DRotate(transform, M_PI, 0, 1, 0);
-    [self addFace:5 withTransform:transform];
+    //define path parameters
+    CGRect rect = CGRectMake(50, 50, 100, 100);
+    CGSize radii = CGSizeMake(20, 20);
+    UIRectCorner corners = UIRectCornerTopRight | UIRectCornerBottomRight | UIRectCornerBottomLeft;
+    //create path
+    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:rect  byRoundingCorners:corners cornerRadii:radii];
+    
+    //create shape layer
+    CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+    shapeLayer.strokeColor = [UIColor redColor].CGColor;
+    shapeLayer.fillColor = [UIColor redColor].CGColor;
+    shapeLayer.lineWidth = 5;
+    shapeLayer.lineJoin = kCALineJoinRound;
+    shapeLayer.lineCap = kCALineCapRound;
+    shapeLayer.path = path.CGPath;
+    //add it to our view
+    _containerView.layer.mask = shapeLayer;
+}
+
+#pragma mark -- Matchstick Men
+- (void)matchstickMen {
+    //create path
+    UIBezierPath *path = [[UIBezierPath alloc] init];
+    [path moveToPoint:CGPointMake(175, 100)];
+    [path addArcWithCenter:CGPointMake(150, 100) radius:25 startAngle:0 endAngle:2*M_PI clockwise:YES];
+    [path moveToPoint:CGPointMake(140, 90)];
+    [path addLineToPoint:CGPointMake(141, 90)];
+    [path moveToPoint:CGPointMake(160, 90)];
+    [path addLineToPoint:CGPointMake(161, 90)];
+    [path moveToPoint:CGPointMake(145, 110)];
+    [path addLineToPoint:CGPointMake(155, 110)];
+    [path moveToPoint:CGPointMake(150, 125)];
+    [path addLineToPoint:CGPointMake(150, 175)];
+    [path addLineToPoint:CGPointMake(125, 225)];
+    [path moveToPoint:CGPointMake(150, 175)];
+    [path addLineToPoint:CGPointMake(175, 225)];
+    [path moveToPoint:CGPointMake(100, 150)];
+    [path addLineToPoint:CGPointMake(200, 150)];
+    
+    //create shape layer
+    CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+    shapeLayer.strokeColor = [UIColor redColor].CGColor;
+    shapeLayer.fillColor = [UIColor clearColor].CGColor;
+    shapeLayer.lineWidth = 5;
+    shapeLayer.lineJoin = kCALineJoinRound;
+    shapeLayer.lineCap = kCALineCapRound;
+    shapeLayer.path = path.CGPath;
+    //add it to our view
+    [_containerView.layer addSublayer:shapeLayer];
 }
 
 - (IBAction)tap:(id)sender {
