@@ -9,24 +9,22 @@
 #import "ViewController.h"
 #import <GLKit/GLKit.h>
 #import <CoreText/CoreText.h>
-#import "CATELayerLabel.h"
-#import "CATEScrollView.h"
+#import <OpenGLES/EAGL.h>
+
 #define LIGHT_DIRECTION 0,1,-0.5
 #define AMBIENT_LIGHT 0.5
 @interface ViewController () <CALayerDelegate>
-@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
+@property (nonatomic, weak) IBOutlet UIView *glView;
+@property (nonatomic, strong) EAGLContext *glContext;
+@property (nonatomic, strong) CAEAGLLayer *glLayer;
+@property (nonatomic, assign) GLuint frameBuffer;
+@property (nonatomic, assign) GLuint colorRenderBuffer;
+@property (nonatomic, assign) GLuint framebufferWidth;
+@property (nonatomic, assign) GLuint framebufferHeight;
+@property (nonatomic, strong) GLKBaseEffect *effect;
 @property (nonatomic, strong) IBOutletCollection(UIView) NSArray *faces;
 @end
-@interface CATiledLayer (CATEFADE)
 
-@end
-@implementation CATiledLayer (CATEFADE)
-
-+ (CFTimeInterval)fadeDuration {
-    return 0.0f;
-}
-
-@end
 UIView * (^getClockHand)(CGRect frame, NSString *imageName) = ^UIView *(CGRect frame, NSString *imageName){
     UIView *view = [[UIView alloc] initWithFrame:frame];
     UIImage *image = [UIImage imageNamed:imageName];
@@ -55,38 +53,85 @@ UIButton * (^getAButton)() = ^UIButton *(){
     return button;
 };
 @implementation ViewController
+- (void)setUpBuffers {
+    //set up frame buffer
+    glGenFramebuffers(1, &_frameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+    
+    //set up color render buffer
+    glGenRenderbuffers(1, &_colorRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, _colorRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _colorRenderBuffer);
+    [_glContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:_glLayer];
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &_framebufferWidth);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &_framebufferHeight);
+    //check success
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        NSLog(@"Failed to make complete framebuffer object: %i", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    }
+}
+- (void)tearDownBuffers {
+    if (_frameBuffer) {
+        //delete framebuffer
+        glDeleteFramebuffers(1, &_frameBuffer);
+        _frameBuffer = 0;
+    }
+    if (_colorRenderBuffer) {
+        //delete color render buffer
+        glDeleteRenderbuffers(1, &_colorRenderBuffer);
+        _colorRenderBuffer = 0;
+    }
+}
+- (void)drawFrame {
+    //bind framebuffer & set viewport
+    glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+    glViewport(0, 0, _framebufferWidth, _framebufferHeight);
+    //bind shader program
+    [self.effect prepareToDraw];
+    //clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //set up verticles
+    GLfloat vertices[] = {-0.5f, -0.5f, -1.0f, 0.0f, 0.5f, -1.0f, 0.5f, -0.5f, -1.0f,};
+    //set up colors
+    GLfloat colors[] = {0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f};
+    //draw triangle
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glEnableVertexAttribArray(GLKVertexAttribColor);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, vertices);
+    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, 0, colors);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    //present render buffer
+    glBindRenderbuffer(GL_RENDERBUFFER, _colorRenderBuffer);
+    [_glContext presentRenderbuffer:GL_RENDERBUFFER];
+}
 - (void)loadView {
     [super loadView];
-    //add the tiled layer
-    CATiledLayer *tileLayer = [CATiledLayer layer];
-    tileLayer.frame = CGRectMake(0, 0, 14935/2, 847/2);
-    tileLayer.delegate = self;
-    tileLayer.contentsScale = [UIScreen mainScreen].scale;
-    [self.scrollView.layer addSublayer:tileLayer];
-    //configure the scroll view
-    _scrollView.contentSize = tileLayer.frame.size;
-    //draw layer
-    [tileLayer setNeedsDisplay];
+    //set up context
+    self.glContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    [EAGLContext setCurrentContext:_glContext];
+    //set up layer
+    self.glLayer = [CAEAGLLayer layer];
+    _glLayer.frame = _glView.bounds;
+    [_glView.layer addSublayer:_glLayer];
+    _glLayer.drawableProperties = @{kEAGLDrawablePropertyRetainedBacking:@NO, kEAGLDrawablePropertyColorFormat:kEAGLColorFormatRGBA8};
+    //set up base effect
+    self.effect = [[GLKBaseEffect alloc] init];
+    //set up buffers
+    [self setUpBuffers];
+    //draw frame
+    [self drawFrame];
 }
-#pragma mark - CALAYER DELEGATE
-- (void)drawLayer:(CATiledLayer *)layer inContext:(CGContextRef)ctx {
-    //determine tile coordinate
-    CGRect bounds = CGContextGetClipBoundingBox(ctx);
-    CGFloat scale = [UIScreen mainScreen].scale;
-    NSInteger x = floor(bounds.origin.x/layer.tileSize.width*scale);
-    NSInteger y = floor(bounds.origin.y/layer.tileSize.height*scale);
-    //load tile image
-    NSString *imageName = [NSString stringWithFormat:@"pics_%02i_%02i",x,y];
-    NSLog(@"imageName %@ %@", imageName, NSStringFromCGRect(bounds));
-    NSString *imagePath = [[NSBundle mainBundle] pathForResource:imageName ofType:@"jpg"];
-    UIImage *tileImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
-    //draw tile
-    UIGraphicsPushContext(ctx);
-    [tileImage drawInRect:bounds];
-    UIGraphicsPopContext();
+- (void)viewDidUnload {
+    [self tearDownBuffers];
+    [super viewDidUnload];
 }
-
 - (IBAction)tap:(id)sender {
     NSLog(@"%s",__FUNCTION__);
+}
+- (void)dealloc
+{
+    [self tearDownBuffers];
+    [EAGLContext setCurrentContext:nil];
 }
 @end

@@ -259,6 +259,7 @@
 		C56B4FE71E4C0C45003CE337 /* pics_58_01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C56B4EFB1E4C0C45003CE337 /* pics_58_01.jpg */; };
 		C56B4FE81E4C0C45003CE337 /* pics_58_02.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C56B4EFC1E4C0C45003CE337 /* pics_58_02.jpg */; };
 		C56B4FE91E4C0C45003CE337 /* pics_58_03.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C56B4EFD1E4C0C45003CE337 /* pics_58_03.jpg */; };
+		C56B4FEB1E4C8620003CE337 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C56B4FEA1E4C8620003CE337 /* OpenGLES.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -543,6 +544,7 @@
 		C56B4EFB1E4C0C45003CE337 /* pics_58_01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pics_58_01.jpg; sourceTree = "<group>"; };
 		C56B4EFC1E4C0C45003CE337 /* pics_58_02.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pics_58_02.jpg; sourceTree = "<group>"; };
 		C56B4EFD1E4C0C45003CE337 /* pics_58_03.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pics_58_03.jpg; sourceTree = "<group>"; };
+		C56B4FEA1E4C8620003CE337 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -550,6 +552,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C56B4FEB1E4C8620003CE337 /* OpenGLES.framework in Frameworks */,
 				C56B4DDE1E49A8D5003CE337 /* CoreText.framework in Frameworks */,
 				C56B4DDC1E489175003CE337 /* GLKit.framework in Frameworks */,
 				C51E3A6B1E4584F50068A440 /* QuartzCore.framework in Frameworks */,
@@ -649,6 +652,7 @@
 		C51E3A691E4584F40068A440 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C56B4FEA1E4C8620003CE337 /* OpenGLES.framework */,
 				C56B4DDD1E49A8D5003CE337 /* CoreText.framework */,
 				C56B4DDB1E489175003CE337 /* GLKit.framework */,
 				C51E3A6A1E4584F50068A440 /* QuartzCore.framework */,
